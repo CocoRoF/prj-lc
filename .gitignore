@@ -1,0 +1,58 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Node / Next.js ----
+node_modules/
+.next/
+.turbo/
+out/
+build/
+*.tsbuildinfo
+webapp/next-env.d.ts
+.pnpm-debug.log*
+npm-debug.log*
+yarn-error.log*
+
+# ---- Env (commit .env.example only) ----
+.env
+.env.local
+.env.*.local
+
+# ---- Generated data (regenerated via scripts) ----
+# Original merged comments.csv (855 MB) — rebuild via:
+#   python etl/split_comments.py --merge
+/data/comments.csv
+
+# SQLite DB (838 MB) — rebuild via:
+#   python etl/build_db.py
+db/
+
+# Crawler raw API captures & dev logs — debug artifacts, regenerable from crawler
+/data/_capture/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ---- Editors ----
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ---- Misc ----
+*.pem
+.vercel
+/dev.log
+/webapp/dev.log

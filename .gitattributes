@@ -1,0 +1,32 @@
+# Line endings: LF for text, native for shell scripts (avoid CRLF on Windows for sh)
+* text=auto eol=lf
+
+# CSV: text with LF endings, so git diff/blame work nicely
+*.csv text eol=lf
+
+# JSON / SQL / config text
+*.json text eol=lf
+*.sql  text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# Sources
+*.py  text eol=lf
+*.ts  text eol=lf
+*.tsx text eol=lf
+*.js  text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.css text eol=lf
+
+# Binaries
+*.xlsx binary
+*.zip  binary
+*.sqlite binary
+*.db   binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
