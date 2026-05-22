@@ -1,10 +1,26 @@
 import { NextRequest } from "next/server";
-import archiver from "archiver";
 import { PassThrough } from "node:stream";
 import { broadcastXlsxBuffer } from "@/lib/export";
 import { getDb } from "@/lib/db";
 
 export const runtime = "nodejs";
+
+// archiver v8 is ESM and exports ZipArchive as a class, but @types/archiver v7
+// still describes the legacy v6 CJS function shape — so neither the named
+// import nor `import archiver from ...` matches both worlds at once. We pull
+// the real class via dynamic import + cast.
+interface ArchiverLike {
+  on(event: "error", cb: (err: Error) => void): this;
+  pipe<T extends NodeJS.WritableStream>(dest: T): T;
+  append(
+    source: Buffer | string | NodeJS.ReadableStream,
+    data: { name: string },
+  ): this;
+  finalize(): Promise<void>;
+}
+type ZipArchiveCtor = new (options?: {
+  zlib?: { level?: number };
+}) => ArchiverLike;
 
 function sanitize(name: string | null | undefined): string {
   return (name ?? "broadcast").replace(/[\\/:*?"<>|]/g, "_").slice(0, 80);
@@ -30,8 +46,12 @@ export async function GET(req: NextRequest) {
     comment_count: number;
   }>;
 
+  const { ZipArchive } = (await import("archiver")) as unknown as {
+    ZipArchive: ZipArchiveCtor;
+  };
+
   const pass = new PassThrough();
-  const archive = archiver("zip", { zlib: { level: 1 } });
+  const archive = new ZipArchive({ zlib: { level: 1 } });
   archive.on("error", (err: Error) => pass.destroy(err));
   archive.pipe(pass);
 

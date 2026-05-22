@@ -1,10 +1,25 @@
 import { NextRequest } from "next/server";
-import archiver from "archiver";
 import { PassThrough } from "node:stream";
 import { broadcastXlsxBuffer, listCategoryBroadcastsAll } from "@/lib/export";
 import { getCategory } from "@/lib/queries";
 
 export const runtime = "nodejs";
+
+// archiver v8 ESM exports ZipArchive as a class; @types/archiver v7 lags
+// behind. Pull the real runtime class via dynamic import + cast. See
+// app/api/download/all/route.ts for the full rationale.
+interface ArchiverLike {
+  on(event: "error", cb: (err: Error) => void): this;
+  pipe<T extends NodeJS.WritableStream>(dest: T): T;
+  append(
+    source: Buffer | string | NodeJS.ReadableStream,
+    data: { name: string },
+  ): this;
+  finalize(): Promise<void>;
+}
+type ZipArchiveCtor = new (options?: {
+  zlib?: { level?: number };
+}) => ArchiverLike;
 
 function sanitize(name: string | null | undefined): string {
   return (name ?? "category").replace(/[\\/:*?"<>|]/g, "_").slice(0, 80);
@@ -36,8 +51,12 @@ export async function GET(
 
   const safe = sanitize(cat.name) + "_" + categoryId.replace(":", "-");
 
+  const { ZipArchive } = (await import("archiver")) as unknown as {
+    ZipArchive: ZipArchiveCtor;
+  };
+
   const pass = new PassThrough();
-  const archive = archiver("zip", { zlib: { level: 1 } });
+  const archive = new ZipArchive({ zlib: { level: 1 } });
   archive.on("error", (err: Error) => pass.destroy(err));
   archive.pipe(pass);
 

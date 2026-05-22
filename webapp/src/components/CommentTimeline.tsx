@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Virtuoso, VirtuosoHandle } from "react-virtuoso";
 import { fmtNumber } from "@/lib/format";
+import { withBasePath } from "@/lib/paths";
 import type { Comment } from "@/lib/types";
 
 type Props = {
@@ -41,15 +42,30 @@ export default function CommentTimeline({
     inFlight.current = true;
     setLoading(true);
     try {
-      const url = `/api/comments?bid=${encodeURIComponent(broadcastId)}&cursor=${cursor ?? 0}&limit=500`;
+      // withBasePath: <Link> / useRouter 만 NEXT_PUBLIC_BASE_PATH 를 자동 prefix
+      // 한다. raw fetch 는 직접 붙여야 함 — 안 그러면 호스트의 /api/* 으로 가서 404.
+      const url = withBasePath(
+        `/api/comments?bid=${encodeURIComponent(broadcastId)}&cursor=${cursor ?? 0}&limit=500`,
+      );
       const r = await fetch(url);
+      if (!r.ok) {
+        // 404/500 등 — 파싱 시도하면 throw 가 unhandled 로 새서 페이지 전체가 죽는다.
+        // 콘솔에만 남기고 더 이상 자동 로드하지 않도록 done 처리.
+        console.error(`[CommentTimeline] fetch failed: ${r.status} ${url}`);
+        setDone(true);
+        return;
+      }
       const j = (await r.json()) as {
-        items: Comment[];
-        nextCursor: number | null;
+        items?: Comment[];
+        nextCursor?: number | null;
       };
-      setItems((prev) => [...prev, ...j.items]);
-      setCursor(j.nextCursor);
-      if (j.nextCursor === null || j.items.length === 0) setDone(true);
+      const items = Array.isArray(j.items) ? j.items : [];
+      setItems((prev) => [...prev, ...items]);
+      setCursor(j.nextCursor ?? null);
+      if (j.nextCursor == null || items.length === 0) setDone(true);
+    } catch (e) {
+      console.error("[CommentTimeline] loadMore failed", e);
+      setDone(true);
     } finally {
       setLoading(false);
       inFlight.current = false;
