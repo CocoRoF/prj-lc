@@ -30,18 +30,25 @@ export default function DailyChart({
         <XAxis
           dataKey="day"
           tick={{ fill: "#64748b", fontSize: 11 }}
-          tickFormatter={(d: string) => d.slice(2, 7)}
+          tickFormatter={(d) =>
+            typeof d === "string" ? d.slice(2, 7) : String(d ?? "")
+          }
           minTickGap={40}
         />
         <YAxis
           tick={{ fill: "#64748b", fontSize: 11 }}
-          tickFormatter={(n: number) =>
-            n >= 1000 ? `${(n / 1000).toFixed(0)}k` : String(n)
-          }
+          tickFormatter={(n) => {
+            const num = typeof n === "number" ? n : Number(n);
+            return num >= 1000 ? `${(num / 1000).toFixed(0)}k` : String(num);
+          }}
         />
         <Tooltip
-          formatter={(v: number) => v.toLocaleString("ko-KR")}
-          labelFormatter={(l) => l}
+          formatter={(value) =>
+            typeof value === "number"
+              ? value.toLocaleString("ko-KR")
+              : String(value ?? "")
+          }
+          labelFormatter={(l) => String(l ?? "")}
           contentStyle={{
             background: "white",
             border: "1px solid #e2e8f0",

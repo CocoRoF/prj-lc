@@ -7,7 +7,10 @@ import type { NextConfig } from "next";
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH?.trim() || "";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["archiver", "exceljs"],
+  // better-sqlite3 도 native 모듈이라 외부로 두지 않으면 Turbopack 의 NFT
+  // 트레이서가 db.ts → queries.ts → route.ts 사슬로 next.config.ts 까지
+  // 추적해 "Encountered unexpected file in NFT list" 경고를 띄운다.
+  serverExternalPackages: ["archiver", "exceljs", "better-sqlite3"],
   ...(basePath ? { basePath, assetPrefix: basePath } : {}),
 };
 

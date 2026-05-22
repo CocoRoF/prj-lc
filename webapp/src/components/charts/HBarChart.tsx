@@ -29,9 +29,10 @@ export default function HBarChart({
         <XAxis
           type="number"
           tick={{ fill: "#64748b", fontSize: 11 }}
-          tickFormatter={(n: number) =>
-            n >= 1000 ? `${(n / 1000).toFixed(0)}k` : String(n)
-          }
+          tickFormatter={(n) => {
+            const num = typeof n === "number" ? n : Number(n);
+            return num >= 1000 ? `${(num / 1000).toFixed(0)}k` : String(num);
+          }}
         />
         <YAxis
           type="category"
@@ -40,7 +41,11 @@ export default function HBarChart({
           width={120}
         />
         <Tooltip
-          formatter={(v: number) => v.toLocaleString("ko-KR")}
+          formatter={(value) =>
+            typeof value === "number"
+              ? value.toLocaleString("ko-KR")
+              : String(value ?? "")
+          }
           contentStyle={{
             background: "white",
             border: "1px solid #e2e8f0",
