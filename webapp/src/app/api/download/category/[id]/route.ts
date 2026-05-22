@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { ZipArchive } from "archiver";
+import archiver from "archiver";
 import { PassThrough } from "node:stream";
 import { broadcastXlsxBuffer, listCategoryBroadcastsAll } from "@/lib/export";
 import { getCategory } from "@/lib/queries";
@@ -37,7 +37,7 @@ export async function GET(
   const safe = sanitize(cat.name) + "_" + categoryId.replace(":", "-");
 
   const pass = new PassThrough();
-  const archive = new ZipArchive({ zlib: { level: 1 } });
+  const archive = archiver("zip", { zlib: { level: 1 } });
   archive.on("error", (err: Error) => pass.destroy(err));
   archive.pipe(pass);
 
