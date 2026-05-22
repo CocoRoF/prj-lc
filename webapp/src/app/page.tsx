@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { dashboardStats } from "@/lib/queries";
 import { fmtNumber } from "@/lib/format";
+import { withBasePath } from "@/lib/paths";
 import DailyChart from "@/components/charts/DailyChart";
 import {
   loadOverview,
@@ -32,7 +33,7 @@ export default async function Home() {
           </div>
         </div>
         <a
-          href="/api/download/all?with_comments=1"
+          href={withBasePath("/api/download/all?with_comments=1")}
           className="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700 whitespace-nowrap"
         >
           ⬇ 전체 ZIP

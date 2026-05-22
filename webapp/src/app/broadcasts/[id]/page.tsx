@@ -7,6 +7,7 @@ import {
   getProducts,
 } from "@/lib/queries";
 import { fmtDateTime, fmtNumber, statusBadgeColor } from "@/lib/format";
+import { withBasePath } from "@/lib/paths";
 
 export default async function BroadcastDetailPage({
   params,
@@ -166,13 +167,13 @@ function DownloadBar({
       </div>
       <div className="flex items-center gap-2">
         <a
-          href={`/api/download/broadcast/${encodeURIComponent(broadcastId)}.csv`}
+          href={withBasePath(`/api/download/broadcast/${encodeURIComponent(broadcastId)}.csv`)}
           className="px-3 py-1.5 rounded bg-white border border-blue-300 text-blue-700 hover:bg-blue-50"
         >
           CSV
         </a>
         <a
-          href={`/api/download/broadcast/${encodeURIComponent(broadcastId)}.xlsx`}
+          href={withBasePath(`/api/download/broadcast/${encodeURIComponent(broadcastId)}.xlsx`)}
           className="px-3 py-1.5 rounded bg-blue-600 text-white hover:bg-blue-700"
         >
           Excel (xlsx)

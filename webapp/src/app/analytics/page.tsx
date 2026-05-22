@@ -14,6 +14,7 @@ import {
   loadTopUsers,
 } from "@/lib/analytics";
 import { fmtNumber } from "@/lib/format";
+import { withBasePath } from "@/lib/paths";
 
 type Tab = "overview" | "timeseries" | "text" | "reports";
 
@@ -363,7 +364,7 @@ function ReportsTab() {
       {reports.map((r) => (
         <a
           key={r.key}
-          href={`/analytics/reports/${r.key}/index.html`}
+          href={withBasePath(`/analytics/reports/${r.key}/index.html`)}
           target="_blank"
           rel="noopener noreferrer"
           className="block bg-white border border-slate-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-sm transition"

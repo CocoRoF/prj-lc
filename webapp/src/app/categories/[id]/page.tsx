@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCategory, listBroadcastsByCategory } from "@/lib/queries";
 import { fmtDateTime, fmtNumber, statusBadgeColor } from "@/lib/format";
+import { withBasePath } from "@/lib/paths";
 
 const PAGE_SIZE = 50;
 
@@ -53,7 +54,7 @@ export default async function CategoryDetailPage({
             방송 {fmtNumber(total)}건 (정렬: {sort === "comment_count" ? "댓글 많은순" : "최신순"})
           </p>
           <a
-            href={`/api/download/category/${encodeURIComponent(id)}.zip?with_comments=1`}
+            href={withBasePath(`/api/download/category/${encodeURIComponent(id)}.zip?with_comments=1`)}
             className="inline-block mt-2 text-xs px-2 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100"
           >
             ⬇ 이 카테고리의 댓글 보유 방송 일괄 다운로드 (xlsx zip)
